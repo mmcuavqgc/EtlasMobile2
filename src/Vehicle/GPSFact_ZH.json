@@ -30,7 +30,7 @@
 },
 {
     "name":             "courseOverGround",
-    "shortDescription": "Course Over Ground",
+    "shortDescription": "对地航向",
     "type":             "double",
     "decimalPlaces":    1,
     "units":            "deg"

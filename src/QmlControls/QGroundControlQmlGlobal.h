@@ -1,4 +1,4 @@
-/****************************************************************************
+﻿/****************************************************************************
  *
  * (c) 2009-2020 QGROUNDCONTROL PROJECT <http://www.qgroundcontrol.org>
  *
@@ -168,6 +168,7 @@ public:
     Q_INVOKABLE double degreesToRadians(double degrees) { return qDegreesToRadians(degrees); }
     Q_INVOKABLE double radiansToDegrees(double radians) { return qRadiansToDegrees(radians); }
 
+    Q_INVOKABLE QString showChineseName(QString nm);
     // Property accesors
 
     QString                 appName             ()  { return qgcApp()->applicationName(); }
@@ -293,6 +294,8 @@ private:
 
     static QGeoCoordinate   _coord;
     static double           _zoom;
+
+    QMap<QString,QString> _enToCNNames;
 };
 
 #endif

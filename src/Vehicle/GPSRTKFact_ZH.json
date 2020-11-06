@@ -7,7 +7,7 @@
 },
 {
     "name":             "currentAccuracy",
-    "shortDescription": "Current Survey-In Accuracy",
+    "shortDescription": "目前测量的准确性",
     "type":             "double",
     "decimalPlaces":    1,
     "units":            "m",
@@ -15,28 +15,28 @@
 },
 {
     "name":             "currentLatitude",
-    "shortDescription": "Current Survey-In Latitude",
+    "shortDescription": "目前测量的纬度",
     "type":             "double",
     "decimalPlaces":    7,
     "default":          null
 },
 {
     "name":             "currentLongitude",
-    "shortDescription": "Current Survey-In Longitude",
+    "shortDescription": "目前测量的经度",
     "type":             "double",
     "decimalPlaces":    7,
     "default":          null
 },
 {
     "name":             "currentAltitude",
-    "shortDescription": "Current Survey-In Altitude",
+    "shortDescription": "目前测量的海拔高度",
     "type":             "float",
     "decimalPlaces":    2,
     "default":          null
 },
 {
     "name":             "currentDuration",
-    "shortDescription": "Current Survey-In Duration",
+    "shortDescription": "目前测量的时长",
     "type":             "double",
     "decimalPlaces":    0,
     "units":            "s",
@@ -44,19 +44,19 @@
 },
 {
     "name":             "valid",
-    "shortDescription": "Survey-In Valid",
+    "shortDescription": "有效值",
     "type":             "bool",
     "default":          false
 },
 {
     "name":             "active",
-    "shortDescription": "Survey-In Active",
+    "shortDescription": "活跃值",
     "type":             "bool",
     "default":          false
 },
 {
     "name":             "numSatellites",
-    "shortDescription": "Number of Satellites",
+    "shortDescription": "卫星数",
     "type":             "int32",
     "default":          0
 }

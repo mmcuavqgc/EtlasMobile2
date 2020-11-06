@@ -1,4 +1,4 @@
-/****************************************************************************
+﻿/****************************************************************************
  *
  * (c) 2009-2020 QGROUNDCONTROL PROJECT <http://www.qgroundcontrol.org>
  *
@@ -209,8 +209,9 @@ Column {
                 id:             header
                 anchors.left:   parent.left
                 anchors.right:  parent.right
-                text:           factGroupName.charAt(0).toUpperCase() + factGroupName.slice(1)
+                text:           language.rawValue === 2? QGroundControl.showChineseName(factGroupName) : factGroupName.charAt(0).toUpperCase() + factGroupName.slice(1)
                 checked:        false
+                property Fact language: QGroundControl.settingsManager.appSettings.language;
             }
 
             Column {

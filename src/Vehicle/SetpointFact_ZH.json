@@ -1,42 +1,42 @@
-[
+﻿[
 {
     "name":             "roll",
-    "shortDescription": "Roll Setpoint",
+    "shortDescription": "横滚值",
     "type":             "double",
     "decimalPlaces":    1,
     "units":            "deg"
 },
 {
     "name":             "pitch",
-    "shortDescription": "Pitch Setpoint",
+    "shortDescription": "俯仰值",
     "type":             "double",
     "decimalPlaces":    1,
     "units":            "deg"
 },
 {
     "name":             "yaw",
-    "shortDescription": "Yaw Setpoint",
+    "shortDescription": "偏航值",
     "type":             "double",
     "decimalPlaces":    1,
     "units":            "deg"
 },
 {
     "name":             "rollRate",
-    "shortDescription": "Roll Rate Setpoint",
+    "shortDescription": "横滚率",
     "type":             "double",
     "decimalPlaces":    1,
     "units":            "deg/s"
 },
 {
     "name":             "pitchRate",
-    "shortDescription": "Pitch Rate Setpoint",
+    "shortDescription": "俯仰率",
     "type":             "double",
     "decimalPlaces":    1,
     "units":            "deg/s"
 },
 {
     "name":             "yawRate",
-    "shortDescription": "Yaw Rate Setpoint",
+    "shortDescription": "偏航率",
     "type":             "double",
     "decimalPlaces":    1,
     "units":            "deg/s"

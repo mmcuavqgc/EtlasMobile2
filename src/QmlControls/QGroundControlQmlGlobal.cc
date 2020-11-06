@@ -1,4 +1,4 @@
-/****************************************************************************
+﻿/****************************************************************************
  *
  * (c) 2009-2020 QGROUNDCONTROL PROJECT <http://www.qgroundcontrol.org>
  *
@@ -38,6 +38,20 @@ QGroundControlQmlGlobal::QGroundControlQmlGlobal(QGCApplication* app, QGCToolbox
     _coord.setLatitude(settings.value(_flightMapPositionLatitudeSettingsKey,    _coord.latitude()).toDouble());
     _coord.setLongitude(settings.value(_flightMapPositionLongitudeSettingsKey,  _coord.longitude()).toDouble());
     _zoom = settings.value(_flightMapZoomSettingsKey, _zoom).toDouble();
+
+
+    _enToCNNames = {
+        { "Vehicle",            QStringLiteral("无人机" )},
+        { "gps",                QStringLiteral("GPS" )},
+        { "battery",            QStringLiteral("电池" )},
+        { "battery2",           QStringLiteral("电池2" )},
+        { "wind",               QStringLiteral("风向" )},
+        { "vibration",          QStringLiteral("高频振荡" )},
+        { "temperature",        QStringLiteral("温度器" )},
+        { "clock",              QStringLiteral("时钟" )},
+        { "distanceSensor",     QStringLiteral("距离传感器" )},
+        { "estimatorStatus",    QStringLiteral("状态估计器" )},
+    };
 }
 
 QGroundControlQmlGlobal::~QGroundControlQmlGlobal()
@@ -222,6 +236,13 @@ bool QGroundControlQmlGlobal::linesIntersect(QPointF line1A, QPointF line1B, QPo
 
     return QLineF(line1A, line1B).intersect(QLineF(line2A, line2B), &intersectPoint) == QLineF::BoundedIntersection &&
             intersectPoint != line1A && intersectPoint != line1B;
+}
+
+QString QGroundControlQmlGlobal::showChineseName(QString nm)
+{
+    QString name;
+    name = _enToCNNames[nm];
+    return name;
 }
 
 void QGroundControlQmlGlobal::setSkipSetupPage(bool skip)
