@@ -1,0 +1,72 @@
+﻿[
+{
+    "name":             "rotationNone",
+    "shortDescription": "前方",
+    "type":             "double",
+    "decimalPlaces":    2,
+    "units":            "m"
+},
+{
+    "name":             "rotationYaw45",
+    "shortDescription": "右前方",
+    "type":             "double",
+    "decimalPlaces":    2,
+    "units":            "m"
+},
+{
+    "name":             "rotationYaw90",
+    "shortDescription": "右方",
+    "type":             "double",
+    "decimalPlaces":    2,
+    "units":            "m"
+},
+{
+    "name":             "rotationYaw135",
+    "shortDescription": "右后方",
+    "type":             "double",
+    "decimalPlaces":    2,
+    "units":            "m"
+},
+{
+    "name":             "rotationYaw180",
+    "shortDescription": "后方",
+    "type":             "double",
+    "decimalPlaces":    2,
+    "units":            "m"
+},
+{
+    "name":             "rotationYaw225",
+    "shortDescription": "左后方",
+    "type":             "double",
+    "decimalPlaces":    2,
+    "units":            "m"
+},
+{
+    "name":             "rotationYaw270",
+    "shortDescription": "左方",
+    "type":             "double",
+    "decimalPlaces":    2,
+    "units":            "m"
+},
+{
+    "name":             "rotationYaw315",
+    "shortDescription": "左前方",
+    "type":             "double",
+    "decimalPlaces":    2,
+    "units":            "m"
+},
+{
+    "name":             "rotationPitch90",
+    "shortDescription": "上方",
+    "type":             "double",
+    "decimalPlaces":    2,
+    "units":            "m"
+},
+{
+    "name":             "rotationPitch270",
+    "shortDescription": "下方",
+    "type":             "double",
+    "decimalPlaces":    2,
+    "units":            "m"
+}
+]

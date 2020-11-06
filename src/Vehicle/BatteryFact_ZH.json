@@ -1,0 +1,59 @@
+﻿[
+{
+    "name":             "voltage",
+    "shortDescription": "电压",
+    "type":             "double",
+    "decimalPlaces":    2,
+    "units":            "v"
+},
+{
+    "name":             "percentRemaining",
+    "shortDescription": "百分比",
+    "type":             "double",
+    "decimalPlaces":    0,
+    "units":            "%"
+},
+{
+    "name":             "mahConsumed",
+    "shortDescription": "耗电量",
+    "type":             "double",
+    "decimalPlaces":    0,
+    "units":            "mAh"
+},
+{
+    "name":             "current",
+    "shortDescription": "电流",
+    "type":             "double",
+    "decimalPlaces":    2,
+    "units":            "A"
+},
+{
+    "name":             "temperature",
+    "shortDescription": "温度",
+    "type":             "double",
+    "decimalPlaces":    0,
+    "units":            "C"
+},
+{
+    "name":             "instantPower",
+    "shortDescription": "功率",
+    "type":             "double",
+    "decimalPlaces":    2,
+    "units":            "W"
+},
+{
+    "name":             "timeRemaining",
+    "shortDescription": "剩余时间",
+    "type":             "double",
+    "decimalPlaces":    0,
+    "units":            "s"
+},
+{
+    "name":             "chargeState",
+    "shortDescription": "充电状态",
+    "type":             "uint8",
+    "enumStrings":      "n/a,正常 使用中,低电量,危险电量,备用状态,电池失败,电池不良",
+    "enumValues":       "0,1,2,3,4,5,6",
+    "decimalPlaces":    0
+}
+]

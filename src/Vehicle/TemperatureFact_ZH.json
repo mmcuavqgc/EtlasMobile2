@@ -1,0 +1,30 @@
+﻿[
+{
+    "name":             "temperature1",
+    "shortDescription": "温度 (1)",
+    "type":             "double",
+    "decimalPlaces":    2,
+    "units":            "C"
+},
+{
+    "name":             "temperature2",
+    "shortDescription": "温度 (2)",
+    "type":             "double",
+    "decimalPlaces":    2,
+    "units":            "C"
+},
+{
+    "name":             "temperature3",
+    "shortDescription": "温度 (3)",
+    "type":             "double",
+    "decimalPlaces":    2,
+    "units":            "C"
+},
+{
+    "name":             "boardTemperature",
+    "shortDescription": "板載溫度",
+    "type":             "double",
+    "decimalPlaces":    2,
+    "units":            "C"
+}
+]

@@ -1,0 +1,131 @@
+﻿[
+{
+    "name":             "roll",
+    "shortDescription": "横滚",
+    "type":             "double",
+    "decimalPlaces":    1,
+    "units":            "deg"
+},
+{
+    "name":             "pitch",
+    "shortDescription": "俯仰",
+    "type":             "double",
+    "decimalPlaces":    1,
+    "units":            "deg"
+},
+{
+    "name":             "heading",
+    "shortDescription": "偏航",
+    "type":             "double",
+    "decimalPlaces":    0,
+    "units":            "deg"
+},
+{
+    "name":             "rollRate",
+    "shortDescription": "横滚率",
+    "type":             "double",
+    "decimalPlaces":    1,
+    "units":            "deg/s"
+},
+{
+    "name":             "pitchRate",
+    "shortDescription": "俯仰率",
+    "type":             "double",
+    "decimalPlaces":    1,
+    "units":            "deg/s"
+},
+{
+    "name":             "yawRate",
+    "shortDescription": "偏航率",
+    "type":             "double",
+    "decimalPlaces":    1,
+    "units":            "deg/s"
+},
+{
+    "name":             "groundSpeed",
+    "shortDescription": "地速",
+    "type":             "double",
+    "decimalPlaces":    1,
+    "units":            "m/s"
+},
+{
+    "name":             "airSpeed",
+    "shortDescription": "空速",
+    "type":             "double",
+    "decimalPlaces":    1,
+    "units":            "m/s"
+},
+{
+    "name":             "climbRate",
+    "shortDescription": "爬升率",
+    "type":             "double",
+    "decimalPlaces":    1,
+    "units":            "m/s"
+},
+{
+    "name":             "altitudeRelative",
+    "shortDescription": "高度(Rel)",
+    "type":             "double",
+    "decimalPlaces":    1,
+    "units":            "m"
+},
+{
+    "name":             "altitudeAMSL",
+    "shortDescription": "海拔(AMSL)",
+    "type":             "double",
+    "decimalPlaces":    1,
+    "units":            "m"
+},
+{
+    "name":             "flightDistance",
+    "shortDescription": "飞行距离",
+    "type":             "double",
+    "decimalPlaces":    1,
+    "units":            "m"
+},
+{
+    "name":             "distanceToHome",
+    "shortDescription": "到家的距离",
+    "type":             "double",
+    "decimalPlaces":    1,
+    "units":            "m"
+},
+{
+    "name":             "headingToHome",
+    "shortDescription": "到home点的航向",
+    "type":             "double",
+    "decimalPlaces":    0,
+    "units":            "deg"
+},
+{
+    "name":             "distanceToGCS",
+    "shortDescription": "到地面站的距离",
+    "type":             "double",
+    "decimalPlaces":    1,
+    "units":            "m"
+},
+{
+    "name":             "headingToNextWP",
+    "shortDescription": "下一航点航向",
+    "type":             "double",
+    "decimalPlaces":    0,
+    "units":            "deg"
+},
+{
+    "name":             "flightTime",
+    "shortDescription": "飞行时间",
+    "type":             "elapsedSeconds",
+    "decimalPlaces":    1
+},
+{
+    "name":             "hobbs",
+    "shortDescription": "Hobbs仪表",
+    "type":             "string"
+},
+{
+    "name":             "throttlePct",
+    "shortDescription": "油门 %",
+    "type":             "uint16",
+    "units":            "%"
+}
+]

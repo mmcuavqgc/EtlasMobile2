@@ -1,0 +1,51 @@
+﻿[
+{
+    "name":             "lat",
+    "shortDescription": "纬度",
+    "type":             "double",
+    "decimalPlaces":    7
+},
+{
+    "name":             "lon",
+    "shortDescription": "经度",
+    "type":             "double",
+    "decimalPlaces":    7
+},
+{
+    "name":             "mgrs",
+    "shortDescription": "MGRS位置",
+    "type":             "string"
+},
+{
+    "name":             "hdop",
+    "shortDescription": "水平因子",
+    "type":             "double",
+    "decimalPlaces":    1
+},
+{
+    "name":             "vdop",
+    "shortDescription": "垂直因子",
+    "type":             "double",
+    "decimalPlaces":    1
+},
+{
+    "name":             "courseOverGround",
+    "shortDescription": "Course Over Ground",
+    "type":             "double",
+    "decimalPlaces":    1,
+    "units":            "deg"
+},
+{
+    "name":             "lock",
+    "shortDescription": "GPS Lock",
+    "type":             "uint32",
+    "enumStrings":      "None,None,2D Lock,3D Lock,3D DGPS Lock,3D RTK GPS Lock (float),3D RTK GPS Lock (fixed),Static (fixed)",
+    "enumValues":       "0,1,2,3,4,5,6,7",
+    "decimalPlaces":    0
+},
+{
+    "name":             "count",
+    "shortDescription": "卫星数",
+    "type":             "uint32"
+}
+]
