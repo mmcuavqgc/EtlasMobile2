@@ -26,6 +26,7 @@ const char* VideoSettings::videoSourceUDPH264   = "UDP h.264 Video Stream";
 const char* VideoSettings::videoSourceUDPH265   = "UDP h.265 Video Stream";
 const char* VideoSettings::videoSourceTCP       = "TCP-MPEG2 Video Stream";
 const char* VideoSettings::videoSourceMPEGTS    = "MPEG-TS (h.264) Video Stream";
+const char* VideoSettings::videoSourceAuto      = "Auto Connection Video Stream";
 
 DECLARE_SETTINGGROUP(Video, "Video")
 {
@@ -41,6 +42,7 @@ DECLARE_SETTINGGROUP(Video, "Video")
 #endif
     videoSourceList.append(videoSourceTCP);
     videoSourceList.append(videoSourceMPEGTS);
+    videoSourceList.append(videoSourceAuto);
 #endif
 #ifndef QGC_DISABLE_UVC
     QList<QCameraInfo> cameras = QCameraInfo::availableCameras();
@@ -83,6 +85,7 @@ DECLARE_SETTINGSFACT(VideoSettings, rtspTimeout)
 DECLARE_SETTINGSFACT(VideoSettings, streamEnabled)
 DECLARE_SETTINGSFACT(VideoSettings, disableWhenDisarmed)
 DECLARE_SETTINGSFACT(VideoSettings, lowLatencyMode)
+DECLARE_SETTINGSFACT(VideoSettings, videoShareEnable)
 
 DECLARE_SETTINGSFACT_NO_FUNC(VideoSettings, videoSource)
 {
@@ -127,6 +130,23 @@ DECLARE_SETTINGSFACT_NO_FUNC(VideoSettings, tcpUrl)
     }
     return _tcpUrlFact;
 }
+DECLARE_SETTINGSFACT_NO_FUNC(VideoSettings, videoResolution)
+{
+    if (!_videoResolutionFact) {
+        _videoResolutionFact = _createSettingsFact(videoResolutionName);
+        connect(_videoResolutionFact, &Fact::valueChanged, this, &VideoSettings::_configChanged);
+    }
+    return _videoResolutionFact;
+}
+
+DECLARE_SETTINGSFACT_NO_FUNC(VideoSettings, cameraId)
+{
+    if (!_cameraIdFact) {
+        _cameraIdFact = _createSettingsFact(cameraIdName);
+        connect(_cameraIdFact, &Fact::valueChanged, this, &VideoSettings::_configChanged);
+    }
+    return _cameraIdFact;
+}
 
 bool VideoSettings::streamConfigured(void)
 {
@@ -162,6 +182,9 @@ bool VideoSettings::streamConfigured(void)
     if(vSource == videoSourceMPEGTS) {
         qCDebug(VideoManagerLog) << "Testing configuration for MPEG-TS Stream:" << udpPort()->rawValue().toInt();
         return udpPort()->rawValue().toInt() != 0;
+    }
+    if(vSource == videoSourceAuto) {
+        return true;
     }
     return false;
 }

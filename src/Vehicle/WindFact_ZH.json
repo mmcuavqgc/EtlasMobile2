@@ -1,0 +1,24 @@
+﻿[
+{
+    "name":             "direction",
+    "shortDescription": "风向",
+    "type":             "double",
+    "decimalPlaces":    1,
+    "units":            "deg"
+},
+{
+    "name":             "speed",
+    "shortDescription": "风速",
+    "type":             "double",
+    "decimalPlaces":    1,
+    "units":            "m/s"
+},
+{
+    "name":             "verticalSpeed",
+    "shortDescription": "风速(vert)",
+    "type":             "double",
+    "decimalPlaces":    1,
+    "units":            "m/s"
+}
+]
+

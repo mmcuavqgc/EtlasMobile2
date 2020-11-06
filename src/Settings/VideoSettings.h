@@ -35,6 +35,9 @@ public:
     DEFINE_SETTINGFACT(streamEnabled)
     DEFINE_SETTINGFACT(disableWhenDisarmed)
     DEFINE_SETTINGFACT(lowLatencyMode)
+    DEFINE_SETTINGFACT(videoResolution)
+    DEFINE_SETTINGFACT(cameraId)
+    DEFINE_SETTINGFACT(videoShareEnable)
 
     Q_PROPERTY(bool     streamConfigured        READ streamConfigured       NOTIFY streamConfiguredChanged)
     Q_PROPERTY(QString  rtspVideoSource         READ rtspVideoSource        CONSTANT)
@@ -59,6 +62,7 @@ public:
     static const char* videoSourceRTSP;
     static const char* videoSourceTCP;
     static const char* videoSourceMPEGTS;
+    static const char* videoSourceAuto;
 
 signals:
     void streamConfiguredChanged    ();

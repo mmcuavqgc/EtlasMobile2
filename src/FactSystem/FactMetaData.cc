@@ -1223,6 +1223,7 @@ QMap<QString, FactMetaData*> FactMetaData::createMapFromJsonFile(const QString& 
     QFile jsonFile(jsonFilename);
     if (!jsonFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
         qWarning() << "Unable to open file" << jsonFilename << jsonFile.errorString();
+        jsonFile.close();
         return metaDataMap;
     }
 

@@ -27,6 +27,8 @@
 #include <QDebug>
 
 #include "px4_custom_mode.h"
+#include "QGCApplication.h"
+#include "SettingsManager.h"
 
 PX4FirmwarePluginInstanceData::PX4FirmwarePluginInstanceData(QObject* parent)
     : QObject(parent)
@@ -91,6 +93,29 @@ PX4FirmwarePlugin::PX4FirmwarePlugin()
         { PX4_CUSTOM_MAIN_MODE_AUTO,        PX4_CUSTOM_SUB_MODE_AUTO_RTGS,          false,  true,   true },
         { PX4_CUSTOM_MAIN_MODE_AUTO,        PX4_CUSTOM_SUB_MODE_AUTO_TAKEOFF,       false,  true,   true },
     };
+
+    int langID = qgcApp()->toolbox()->settingsManager()->appSettings()->language()->rawValue().toInt();
+
+    if(langID == 2) {
+        _manualFlightMode =         QStringLiteral("手动模式");
+        _stabilizedFlightMode =     QStringLiteral("自稳模式");
+        _acroFlightMode =           QStringLiteral("特技模式");
+        _rattitudeFlightMode =      QStringLiteral("半自稳模式");
+        _altCtlFlightMode =         QStringLiteral("定高模式");
+        _offboardFlightMode =       QStringLiteral("板外模式");
+        _simpleFlightMode =         QStringLiteral("简单模式");
+        _posCtlFlightMode =         QStringLiteral("定点模式");
+        _orbitFlightMode =          QStringLiteral("轨道模式");
+        _holdFlightMode =           QStringLiteral("保持模式");
+        _missionFlightMode =        QStringLiteral("航线模式");
+        _rtlFlightMode =            QStringLiteral("返航模式");
+        _followMeFlightMode =       QStringLiteral("跟随模式");
+        _landingFlightMode =        QStringLiteral("降落模式");
+        _preclandFlightMode =       QStringLiteral("精准降落");
+        _readyFlightMode =          QStringLiteral("就绪模式");
+        _rtgsFlightMode =           QStringLiteral("返回地面站");
+        _takeoffFlightMode =        QStringLiteral("起飞模式");
+    }
 
     // Must be in same order as above structure
     const QString* rgModeNames[] = {
