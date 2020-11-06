@@ -45,6 +45,12 @@ UrlFactory::UrlFactory() : _timeout(5 * 1000) {
     _providersTable["Google Labels"]     = new GoogleTerrainMapProvider(this);
 #endif
 
+    _providersTable["Google China Street Map"] = new GoogleCNStreetMapProvider(this);
+    _providersTable["Google China Satellite"]  = new GoogleCNSatelliteMapProvider(this);
+    _providersTable["Google China Terrain"]    = new GoogleCNTerrainMapProvider(this);
+    _providersTable["Google China Hybrid"]    = new GoogleCNHybridMapProvider(this);
+    _providersTable["Google China Labels"]     = new GoogleCNTerrainMapProvider(this);
+
     _providersTable["Bing Road"]      = new BingRoadMapProvider(this);
     _providersTable["Bing Satellite"] = new BingSatelliteMapProvider(this);
     _providersTable["Bing Hybrid"]    = new BingHybridMapProvider(this);

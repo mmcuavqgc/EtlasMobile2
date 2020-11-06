@@ -19,6 +19,7 @@ contains(QT_VERSION, 5.5.1) {
 }
 
 HEADERS += \
+    $$PWD/GoogleCNMapProvider.h \
     $$PWD/QGCMapEngine.h \
     $$PWD/QGCMapEngineData.h \
     $$PWD/QGCMapTileSet.h \
@@ -41,6 +42,7 @@ HEADERS += \
 
 
 SOURCES += \
+    $$PWD/GoogleCNMapProvider.cpp \
     $$PWD/QGCMapEngine.cpp \
     $$PWD/QGCMapTileSet.cpp \
     $$PWD/QGCMapUrlEngine.cpp \

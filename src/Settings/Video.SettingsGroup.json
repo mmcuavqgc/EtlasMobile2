@@ -124,5 +124,28 @@
     "longDescription":  "If this option is enabled, the rtpjitterbuffer is removed and the video sink is set to assynchronous mode, reducing the latency by about 200 ms.",
     "type":             "bool",
     "defaultValue":     false
+},
+{
+    "name":             "videoResolution",
+    "shortDescription": "Video stream resolution",
+    "longDescription":  "Video stream resolution.",
+    "type":             "uint32",
+    "enumStrings":      "undefined,720p,1080p",
+    "enumValues":       "0,1,2",
+    "defaultValue":     0
+},
+{
+    "name":             "cameraId",
+    "shortDescription": "Camera ID",
+    "longDescription":  "Camera ID used for video streaming.",
+    "type":             "uint32",
+    "defaultValue":     0
+},
+{
+    "name":             "videoShareEnable",
+    "shortDescription": "video shared enabled",
+    "longDescription":  "video shared enabled",
+    "type":             "bool",
+    "defaultValue":     false
 }
 ]

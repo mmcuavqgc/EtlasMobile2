@@ -18,6 +18,11 @@
 #include <QFile>
 #include <QQmlEngine>
 
+#include "QGCApplication.h"
+#include "SettingsManager.h"
+#include "AppSettings.h"
+
+
 QGC_LOGGING_CATEGORY(FactGroupLog, "FactGroupLog")
 
 FactGroup::FactGroup(int updateRateMsecs, const QString& metaDataFile, QObject* parent)
@@ -25,7 +30,17 @@ FactGroup::FactGroup(int updateRateMsecs, const QString& metaDataFile, QObject* 
     , _updateRateMSecs(updateRateMsecs)
 {
     _setupTimer();
-    _nameToFactMetaDataMap = FactMetaData::createMapFromJsonFile(metaDataFile, this);
+    //_nameToFactMetaDataMap = FactMetaData::createMapFromJsonFile(metaDataFile, this);
+
+    int langID = qgcApp()->toolbox()->settingsManager()->appSettings()->language()->rawValue().toInt();
+    QString fileName = metaDataFile;
+
+    if(langID == 2) {
+        // Chinese
+        int index = fileName.indexOf(".json");
+        fileName = fileName.mid(0, index) + "_ZH" + fileName.mid(index);
+    }
+    _nameToFactMetaDataMap = FactMetaData::createMapFromJsonFile(fileName, this);
 }
 
 FactGroup::FactGroup(int updateRateMsecs, QObject* parent)

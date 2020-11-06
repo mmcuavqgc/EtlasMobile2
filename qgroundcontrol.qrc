@@ -289,6 +289,17 @@
         <file alias="Vehicle/VibrationFact.json">src/Vehicle/VibrationFact.json</file>
         <file alias="Vehicle/WindFact.json">src/Vehicle/WindFact.json</file>
         <file alias="Video.SettingsGroup.json">src/Settings/Video.SettingsGroup.json</file>
+        <file alias="Vehicle/VibrationFact_ZH.json">src/Vehicle/VibrationFact_ZH.json</file>
+        <file alias="Vehicle/VehicleFact_ZH.json">src/Vehicle/VehicleFact_ZH.json</file>
+        <file alias="Vehicle/TemperatureFact_ZH.json">src/Vehicle/TemperatureFact_ZH.json</file>
+        <file alias="Vehicle/SubmarineFact_ZH.json">src/Vehicle/SubmarineFact_ZH.json</file>
+        <file alias="Vehicle/SetpointFact_ZH.json">src/Vehicle/SetpointFact_ZH.json</file>
+        <file alias="Vehicle/GPSRTKFact_ZH.json">src/Vehicle/GPSRTKFact_ZH.json</file>
+        <file alias="Vehicle/GPSFact_ZH.json">src/Vehicle/GPSFact_ZH.json</file>
+        <file alias="Vehicle/EstimatorStatusFactGroup_ZH.json">src/Vehicle/EstimatorStatusFactGroup_ZH.json</file>
+        <file alias="Vehicle/DistanceSensorFact_ZH.json">src/Vehicle/DistanceSensorFact_ZH.json</file>
+        <file alias="Vehicle/ClockFact_ZH.json">src/Vehicle/ClockFact_ZH.json</file>
+        <file alias="Vehicle/BatteryFact_ZH.json">src/Vehicle/BatteryFact_ZH.json</file>
     </qresource>
     <qresource prefix="/MockLink">
         <file alias="APMArduSubMockLink.params">src/comm/APMArduSubMockLink.params</file>
