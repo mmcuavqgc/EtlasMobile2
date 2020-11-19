@@ -19,6 +19,11 @@
 #include <QCameraInfo>
 #endif
 
+#ifdef __android__
+#include <QtAndroidExtras/QAndroidJniObject>
+#define VIDEO_SHARE_PROP_NAME "persist.fpv.ext.disp"
+#endif
+
 const char* VideoSettings::videoSourceNoVideo   = "No Video Available";
 const char* VideoSettings::videoDisabled        = "Video Stream Disabled";
 const char* VideoSettings::videoSourceRTSP      = "RTSP Video Stream";
@@ -34,6 +39,7 @@ DECLARE_SETTINGGROUP(Video, "Video")
 
     // Setup enum values for videoSource settings into meta data
     QStringList videoSourceList;
+    videoSourceList.append(videoDisabled);
 #ifdef QGC_GST_STREAMING
     videoSourceList.append(videoSourceRTSP);
 #ifndef NO_UDP_VIDEO
@@ -42,7 +48,7 @@ DECLARE_SETTINGGROUP(Video, "Video")
 #endif
     videoSourceList.append(videoSourceTCP);
     videoSourceList.append(videoSourceMPEGTS);
-    videoSourceList.append(videoSourceAuto);
+    //videoSourceList.append(videoSourceAuto);
 #endif
 #ifndef QGC_DISABLE_UVC
     QList<QCameraInfo> cameras = QCameraInfo::availableCameras();
@@ -54,15 +60,39 @@ DECLARE_SETTINGGROUP(Video, "Video")
         _noVideo = true;
         videoSourceList.append(videoSourceNoVideo);
     } else {
-        videoSourceList.insert(0, videoDisabled);
+        videoSourceList.insert(0, videoSourceAuto);
     }
     QVariantList videoSourceVarList;
     for (const QString& videoSource: videoSourceList) {
         videoSourceVarList.append(QVariant::fromValue(videoSource));
     }
+
+    _videoShareSettings = new WifiSettings();
     _nameToMetaDataMap[videoSourceName]->setEnumInfo(videoSourceList, videoSourceVarList);
     // Set default value for videoSource
     _setDefaults();
+}
+
+bool VideoSettings::setVideoShareEnabled(bool enabled)
+{
+#ifdef __android__
+    if(!_videoShareSettings->setVideoShareApEnabled(enabled)) {
+        qWarning() << "Set wifi AP hotspot failed.";
+        return false;
+    }
+
+    QAndroidJniObject prop = QAndroidJniObject::fromString(VIDEO_SHARE_PROP_NAME);
+    QAndroidJniObject value;
+    if(enabled) {
+        value = QAndroidJniObject::fromString("1");
+    } else {
+        value = QAndroidJniObject::fromString("0");
+    }
+    QAndroidJniObject::callStaticObjectMethod("android/os/SystemProperties", "set", "(Ljava/lang/String;Ljava/lang/String;)V",
+                                                                                prop.object<jstring>(), value.object<jstring>());
+    qDebug() << "Andoid property" << prop.toString() << "is be set to" << value.toString();
+#endif
+    return true;
 }
 
 void VideoSettings::_setDefaults()
@@ -85,7 +115,6 @@ DECLARE_SETTINGSFACT(VideoSettings, rtspTimeout)
 DECLARE_SETTINGSFACT(VideoSettings, streamEnabled)
 DECLARE_SETTINGSFACT(VideoSettings, disableWhenDisarmed)
 DECLARE_SETTINGSFACT(VideoSettings, lowLatencyMode)
-DECLARE_SETTINGSFACT(VideoSettings, videoShareEnable)
 
 DECLARE_SETTINGSFACT_NO_FUNC(VideoSettings, videoSource)
 {
@@ -147,6 +176,27 @@ DECLARE_SETTINGSFACT_NO_FUNC(VideoSettings, cameraId)
     }
     return _cameraIdFact;
 }
+
+DECLARE_SETTINGSFACT_NO_FUNC(VideoSettings, videoShareEnable)
+{
+    if (!_videoShareEnableFact) {
+        _videoShareEnableFact = _createSettingsFact(videoShareEnableName);
+        connect(_videoShareEnableFact, &Fact::valueChanged, this, &VideoSettings::_configChanged);
+#ifdef __android__
+        //Set video share state by property
+        QAndroidJniObject prop = QAndroidJniObject::fromString(VIDEO_SHARE_PROP_NAME);
+        QAndroidJniObject defaultValue = QAndroidJniObject::fromString("0");
+        QAndroidJniObject value = QAndroidJniObject::callStaticObjectMethod("android/os/SystemProperties", "get",
+                                    "(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;", prop.object<jstring>(), defaultValue.object<jstring>());
+        _videoShareEnableFact->setRawValue(value.toString().toInt());
+        if(_videoShareEnableFact->rawValue().toBool()) {
+            _videoShareSettings->setVideoShareApEnabled(true);
+        }
+#endif
+    }
+    return _videoShareEnableFact;
+}
+
 
 bool VideoSettings::streamConfigured(void)
 {

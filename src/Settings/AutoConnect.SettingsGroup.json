@@ -65,7 +65,7 @@
     "name":             "udpTargetHostIP",
     "shortDescription": "UDP target host IP for autoconnect",
     "type":             "string",
-    "defaultValue":     ""
+    "defaultValue":     "127.0.0.1"
 },
 {
     "name":             "udpTargetHostPort",

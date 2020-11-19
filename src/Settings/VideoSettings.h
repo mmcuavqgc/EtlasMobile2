@@ -11,6 +11,7 @@
 #define VideoSettings_H
 
 #include "SettingsGroup.h"
+#include "WifiSettings.h"
 
 class VideoSettings : public SettingsGroup
 {
@@ -46,6 +47,9 @@ public:
     Q_PROPERTY(QString  tcpVideoSource          READ tcpVideoSource         CONSTANT)
     Q_PROPERTY(QString  mpegtsVideoSource       READ mpegtsVideoSource      CONSTANT)
     Q_PROPERTY(QString  disabledVideoSource     READ disabledVideoSource      CONSTANT)
+    Q_PROPERTY(WifiSettings* videoShareSettings  READ videoShareSettings     CONSTANT)
+
+    Q_INVOKABLE bool setVideoShareEnabled(bool enabled);
 
     bool     streamConfigured       ();
     QString  rtspVideoSource        () { return videoSourceRTSP; }
@@ -54,6 +58,7 @@ public:
     QString  tcpVideoSource         () { return videoSourceTCP; }
     QString  mpegtsVideoSource      () { return videoSourceMPEGTS; }
     QString  disabledVideoSource    () { return videoDisabled; }
+    WifiSettings* videoShareSettings(void) { return _videoShareSettings; }
 
     static const char* videoSourceNoVideo;
     static const char* videoDisabled;
@@ -75,6 +80,7 @@ private:
 
 private:
     bool _noVideo = false;
+    WifiSettings* _videoShareSettings = nullptr;
 
 };
 

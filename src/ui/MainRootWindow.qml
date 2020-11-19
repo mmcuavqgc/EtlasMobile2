@@ -310,8 +310,9 @@ ApplicationWindow {
     //-------------------------------------------------------------------------
     /// Toolbar
     header: ToolBar {
-        height:         ScreenTools.toolbarHeight
+        height:         toolbar.source == _planToolbar ? ScreenTools.toolbarHeight + 12 : ScreenTools.toolbarHeight
         visible:        !QGroundControl.videoManager.fullScreen
+
         background:     Rectangle {
             color:      qgcPal.globalTheme === QGCPalette.Light ? QGroundControl.corePlugin.options.toolbarBackgroundLight : QGroundControl.corePlugin.options.toolbarBackgroundDark
         }

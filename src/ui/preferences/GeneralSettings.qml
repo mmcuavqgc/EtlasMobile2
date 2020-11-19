@@ -55,6 +55,8 @@ Rectangle {
     property bool   _isRTSP:                    _isGst && _videoSource === QGroundControl.settingsManager.videoSettings.rtspVideoSource
     property bool   _isTCP:                     _isGst && _videoSource === QGroundControl.settingsManager.videoSettings.tcpVideoSource
     property bool   _isMPEGTS:                  _isGst && _videoSource === QGroundControl.settingsManager.videoSettings.mpegtsVideoSource
+    property real _editFieldWidth:              ScreenTools.defaultFontPixelWidth * 25
+    property var _videoShareSettings:           QGroundControl.settingsManager.videoSettings.videoShareSettings
 
     property string gpsDisabled: "Disabled"
     property string gpsUdpPort:  "UDP Port"
@@ -1043,6 +1045,219 @@ Rectangle {
                             visible:                _isGst && QGroundControl.settingsManager.videoSettings.lowLatencyMode.visible
                         }
                     }
+                }
+
+                Item { width: 1; height: _margins }
+                //-----------------------------------------------------------------
+                //-- Video Share
+                QGCLabel {
+                    id:             videoShareLabel
+                    text:           qsTr("Video Sharing")
+                    font.family:    ScreenTools.demiboldFontFamily
+                }
+
+                Connections {
+                    target: _videoShareSettings
+                    onWifiAPStateChanged: {
+                        if(state == 0) {
+
+                                videoShareEnabled.checked = false;
+                                if(videoShareEnabled.checked != videoShareEnabled.fact.value) {
+                                    videoShareEnabled.fact.value = 0;
+                                    QGroundControl.settingsManager.videoSettings.setVideoShareEnabled(false);
+                                }
+
+                        }
+                        if(state == 1) {
+
+                                videoShareEnabled.checked = true;
+                                if(videoShareEnabled.checked != videoShareEnabled.fact.value) {
+                                    videoShareEnabled.fact.value = 1;
+                                    QGroundControl.settingsManager.videoSettings.setVideoShareEnabled(true);
+                                }
+
+                        }
+                    }
+                }
+
+                Rectangle {
+                    Layout.preferredWidth:  videoShareGrid.width + (_margins * 2)
+                    Layout.preferredHeight: videoShareGrid.height + (_margins * 2)
+                    Layout.fillWidth:       true
+                    color:                  qgcPal.windowShade
+                    visible:                videoShareLabel.visible
+
+                    GridLayout {
+                        id:                         videoShareGrid
+                        anchors.margins:            _margins
+                        anchors.top:                parent.top
+                        anchors.horizontalCenter:   parent.horizontalCenter
+                        Layout.fillWidth:           false
+                        Layout.fillHeight:          false
+                        columns:                    2
+
+
+                        function saveConfiguration() {
+                            var ret = _videoShareSettings.setVideoShareApConfig(networkName.text, pasword.text, securityMode.currentIndex, true);
+                            if(!ret)
+                                resetConfiguration();
+                        }
+
+                        function resetConfiguration() {
+                            networkName.text = _videoShareSettings.videoShareSSID;
+                            securityMode.currentIndex = _videoShareSettings.videoShareAuthType;
+                            pasword.text = _videoShareSettings.videoSharePasswd;
+                            saveButton.enabled = false;
+                            cancelButton.enabled = false;
+
+                        }
+
+                        function checkInputStatue(index) {
+                            if(networkName.text != _videoShareSettings.videoShareSSID
+                                || index != _videoShareSettings.videoShareAuthType
+                                    || pasword.text != _videoShareSettings.videoSharePasswd) {
+                                saveButton.enabled = true;
+                                cancelButton.enabled = true;
+                            } else {
+                                saveButton.enabled = false;
+                                cancelButton.enabled = false;
+                            }
+                            if(networkName.length == 0)
+                                saveButton.enabled = false;
+                            if(index != 0 && pasword.length < 8) {
+
+                                saveButton.enabled = false;
+                            } else {
+
+                            }
+                        }
+
+                        FactCheckBox {
+                            id:                 videoShareEnabled
+                            text:               qsTr("Video Share Enabled")
+                            fact:               QGroundControl.settingsManager.videoSettings.videoShareEnable
+                            Layout.columnSpan:  2
+
+                            onClicked: {
+                                var ret = QGroundControl.settingsManager.videoSettings.setVideoShareEnabled(checked);
+                                if(!ret)
+                                    checked = !checked;
+                            }
+                        }
+
+                        QGCLabel {
+                            text:               qsTr("URL:")
+                        }
+
+                        QGCTextField {
+                            Layout.fillWidth:   true
+                            text:               _videoShareSettings.rtspURL
+                            enabled:            false
+                        }
+
+                        QGCLabel {
+                            text:               qsTr("Network Name:")
+                        }
+
+                        QGCTextField {
+                            id:                 networkName
+                            Layout.fillWidth:   true
+                            text:               _videoShareSettings.videoShareSSID
+
+                            onEditingFinished: {
+                                videoShareGrid.checkInputStatue(securityMode.currentIndex);
+                            }
+                        }
+
+                        QGCLabel {
+                            text:               qsTr("Security:")
+                        }
+
+                        QGCComboBox {
+                            id:     securityMode
+                            Layout.fillWidth: true
+                            model:  ["None", "WPA2 PSK"]
+                            currentIndex: _videoShareSettings.videoShareAuthType
+                            onActivated: {
+                                videoShareGrid.checkInputStatue(index);
+                            }
+                        }
+
+                        QGCLabel {
+                            text:               qsTr("Password:")
+                        }
+
+                        QGCTextField {
+                            id:                 pasword
+                            Layout.fillWidth:   true
+                            text:               _videoShareSettings.videoSharePasswd
+                            echoMode:           TextInput.Password
+
+                            onEditingFinished: {
+                                videoShareGrid.checkInputStatue(securityMode.currentIndex);
+                            }
+                        }
+
+                        QGCLabel {
+                            id:                 passwdErrorLabel
+                            text:               qsTr("The password must have at least 8 characters.")
+                            Layout.fillWidth:   true
+                        }
+                        QGCCheckBox {
+                            text:           qsTr("Show password")
+                            visible:        securityMode.currentIndex > 0
+                            enabled:        videoShareEnabled.checked
+
+                            onClicked: {
+                                if(!checked) {
+                                    pasword.echoMode = TextInput.Password;
+                                } else {
+                                    pasword.echoMode = TextInput.Normal;
+                                }
+                            }
+                        }
+
+                        Row {
+                            id:                         buttonsRow
+                            spacing:                    ScreenTools.defaultFontPixelWidth
+                            Layout.columnSpan:          2
+
+                            QGCButton {
+                                id:      saveButton
+                                text:    qsTr("Save")
+                                enabled: false
+
+                                onClicked: {
+                                    saveDialog.open();
+                                }
+                            }
+                            QGCButton {
+                                id:      cancelButton
+                                text:    qsTr("Cancel")
+                                enabled: false
+
+                                onClicked: {
+                                    videoShareGrid.resetConfiguration();
+                                }
+                            }
+                            MessageDialog {
+                                id:         saveDialog
+                                visible:    false
+                                icon:       StandardIcon.Warning
+                                standardButtons: StandardButton.Yes | StandardButton.No
+                                title:      qsTr("Save Video Share Settings")
+                                text:       qsTr("Wifi hotspot is already opened, changing settings would make it restarted. Continue?")
+                                onYes: {
+                                    videoShareRec.enabled = false;
+                                    videoShareGrid.saveConfiguration();
+                                    saveButton.enabled = false;
+                                    cancelButton.enabled = false;
+                                }
+                            }
+                        }
+
+                    }
+
                 }
 
                 Item { width: 1; height: _margins }

@@ -144,13 +144,13 @@ QString GoogleCNStreetMapProvider::_getURL(const int x, const int y, const int z
 
 QString GoogleCNSatelliteMapProvider::_getURL(const int x, const int y, const int zoom, QNetworkAccessManager* networkManager) {
     // http://mt1.google.com/vt/lyrs=s
-    QString server  = QStringLiteral("khm");
-    QString request = QStringLiteral("kh");
+    QString server  = QStringLiteral("mt");
+    QString request = QStringLiteral("vt");
     QString sec1; // after &x=...
     QString sec2; // after &zoom=...
     _getSecGoogleWords(x, y, sec1, sec2);
     _tryCorrectGoogleVersions(networkManager);
-    return QString(QStringLiteral("http://%1%2.google.cn/%3/v=%4&hl=%5&x=%6%7&y=%8&z=%9&s=%10"))
+    return QString(QStringLiteral("http://%1%2.google.cn/%3/lyrs=%4&gl=%5&x=%6%7&y=%8&z=%9&s=%10"))
         .arg(server)
         .arg(_getServerNum(x, y, 4))
         .arg(request)

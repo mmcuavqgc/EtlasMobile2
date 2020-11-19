@@ -81,8 +81,8 @@ bool WifiSettings::setVideoShareApConfig(QString name, QString passwd, int authT
 
 bool WifiSettings::setVideoShareApEnabled(bool enabled)
 {
-    bool ret = QAndroidJniObject::callStaticMethod<jboolean>("org.mavlink.qgroundcontrol.QGCActivity", "setWifiApEnabled", "(Z)Z", enabled);
-    return ret;
+    /*bool ret =*/ QAndroidJniObject::callStaticMethod<jboolean>("org.mavlink.qgroundcontrol.QGCActivity", "setWifiApEnabled", "(Z)Z", enabled);
+    return enabled;
 }
 
 void WifiSettings::setCountryCode(QString country, bool persist)

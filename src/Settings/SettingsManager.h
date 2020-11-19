@@ -27,6 +27,7 @@
 #include "APMMavlinkStreamRateSettings.h"
 #include "FirmwareUpgradeSettings.h"
 #include "ADSBVehicleManagerSettings.h"
+#include "RfSettings.h"
 #if defined(QGC_AIRMAP_ENABLED)
 #include "AirMapSettings.h"
 #endif
@@ -58,6 +59,7 @@ public:
 #if !defined(NO_ARDUPILOT_DIALECT)
     Q_PROPERTY(QObject* apmMavlinkStreamRateSettings    READ apmMavlinkStreamRateSettings   CONSTANT)
 #endif
+    Q_PROPERTY(QObject* rfSettings                      READ rfSettings                     CONSTANT)
     // Override from QGCTool
     virtual void setToolbox(QGCToolbox *toolbox);
 
@@ -79,6 +81,7 @@ public:
 #if !defined(NO_ARDUPILOT_DIALECT)
     APMMavlinkStreamRateSettings*   apmMavlinkStreamRateSettings(void) { return _apmMavlinkStreamRateSettings; }
 #endif
+    RfSettings*                     rfSettings                  (void) { return _rfSettings; }
 private:
 #if defined(QGC_AIRMAP_ENABLED)
     AirMapSettings*         _airMapSettings;
@@ -98,6 +101,7 @@ private:
 #if !defined(NO_ARDUPILOT_DIALECT)
     APMMavlinkStreamRateSettings*   _apmMavlinkStreamRateSettings;
 #endif
+    RfSettings*                     _rfSettings;
 };
 
 #endif

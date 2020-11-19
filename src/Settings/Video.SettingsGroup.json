@@ -19,7 +19,7 @@
     "shortDescription": "Video RTSP Url",
     "longDescription":  "RTSP url address and port to bind to for video stream. Example: rtsp://192.168.42.1:554/live",
     "type":             "string",
-    "defaultValue":     "rtsp://192.168.114.10:8554/H264Video"
+    "defaultValue":     ""
 },
 {
     "name":             "tcpUrl",

@@ -62,6 +62,21 @@ import com.hoho.android.usbserial.driver.*;
 import org.qtproject.qt5.android.bindings.QtActivity;
 import org.qtproject.qt5.android.bindings.QtApplication;
 
+import java.lang.reflect.Method;
+import java.lang.reflect.Field;
+import android.net.wifi.WifiManager;
+import android.net.wifi.WifiConfiguration;
+import android.net.ConnectivityManager;
+import android.os.Handler;
+import android.os.ResultReceiver;
+import android.media.MediaScannerConnection;
+
+import android.content.Intent;
+import android.provider.Settings;
+import android.os.Build;
+import android.net.Uri;
+
+
 public class QGCActivity extends QtActivity
 {
     public  static int                                  BAD_DEVICE_ID = 0;
@@ -76,6 +91,20 @@ public class QGCActivity extends QtActivity
     private static PendingIntent                        _usbPermissionIntent = null;
     private TaiSync                                     taiSync = null;
     private Timer                                       probeAccessoriesTimer = null;
+
+    private static WifiManager m_wifiManager;
+    private static WifiConfiguration m_wifiConfig;
+    private static ConnectivityManager m_Cm;
+    private static Handler mHandler = new Handler();
+    private static boolean m_needRestartWifiAp;
+    private static String[] ToastStrings = new String[] {"Photo captured!",
+                                                         "Photo capture failed!",
+                                                         "Video recording started!",
+                                                         "Video recording stopped!"};
+
+
+
+
 
     public static Context m_context;
 
@@ -183,6 +212,8 @@ public class QGCActivity extends QtActivity
     public static native void qgcLogDebug(String message);
     public static native void qgcLogWarning(String message);
 
+    private static native void nativeSendWifiApState(int state);
+
     public native void nativeInit();
 
     // QGCActivity singleton
@@ -222,6 +253,12 @@ public class QGCActivity extends QtActivity
         // Create intent for usb permission request
         _usbPermissionIntent = PendingIntent.getBroadcast(_instance, 0, new Intent(ACTION_USB_PERMISSION), 0);
 
+        m_wifiManager = (WifiManager)_instance.getSystemService(Context.WIFI_SERVICE);
+        m_wifiConfig = getWifiApConfiguration();
+        m_Cm = (ConnectivityManager)_instance.getSystemService(Context.CONNECTIVITY_SERVICE);
+        m_needRestartWifiAp = false;
+
+
         try {
             taiSync = new TaiSync();
 
@@ -240,6 +277,16 @@ public class QGCActivity extends QtActivity
         } catch(Exception e) {
            Log.e(TAG, "Exception: " + e);
         }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+               if (!Settings.System.canWrite(_instance)) {
+                   Intent intent = new Intent(Settings.ACTION_MANAGE_WRITE_SETTINGS,
+                           Uri.parse("package:" + _instance.getPackageName()));
+                   intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                   _instance.startActivityForResult(intent, 1);
+               }
+        }
+
     }
 
     @Override
@@ -743,6 +790,120 @@ public class QGCActivity extends QtActivity
                 }
             }
         }).start();
+    }
+
+
+    private void registerWifiBroadcast()
+    {
+        Log.d(TAG, "registerWifiBroadcast");
+        IntentFilter filter = new IntentFilter();
+        filter.addAction("android.net.wifi.WIFI_AP_STATE_CHANGED");
+        registerReceiver(new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                String action = intent.getAction();
+                if("android.net.wifi.WIFI_AP_STATE_CHANGED".equals(action)) {
+                    int state = intent.getIntExtra(WifiManager.EXTRA_WIFI_STATE, 0);
+                    nativeSendWifiApState(state);
+                    if(state == 11 && m_needRestartWifiAp) {//WifiManager.WIFI_AP_STATE_DISABLED
+                        m_needRestartWifiAp = false;
+                        Log.d(TAG, "Restarting WifiAp due to prior config change.");
+                        setWifiApEnabled(true);
+                    }
+                }
+            }
+        }, filter);
+    }
+
+    public static void registerBroadcast()
+    {
+        _instance.registerWifiBroadcast();
+    }
+
+    public static void setNeedRestartWifiAp(boolean need)
+    {
+        m_needRestartWifiAp = need;
+    }
+
+    public static WifiConfiguration getWifiApConfiguration()
+    {
+        try {
+            Method method = m_wifiManager.getClass().getMethod("getWifiApConfiguration");
+            return (WifiConfiguration)method.invoke(m_wifiManager);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public static boolean setWifiApConfiguration(String ssid, String password, int authType)
+    {
+        try {
+            m_wifiConfig.SSID = ssid;
+            m_wifiConfig.preSharedKey = password;
+            m_wifiConfig.allowedKeyManagement.clear();
+            if(authType == 1) {
+                m_wifiConfig.allowedKeyManagement.set(4);//WifiConfiguration.KeyMgmt.WPA2_PSK
+            } else if(authType == 0) {
+                m_wifiConfig.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.NONE);
+            }
+            Method method = m_wifiManager.getClass().getMethod("setWifiApConfiguration", WifiConfiguration.class);
+            return (Boolean)method.invoke(m_wifiManager, m_wifiConfig);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public static boolean setWifiApEnabled(boolean enabled)
+    {
+        try {
+            Field field = m_Cm.getClass().getDeclaredField("TETHERING_WIFI");
+            field.setAccessible(true);
+            int TETHERING_WIFI = (int)field.get(m_Cm);
+            Field mService = m_Cm.getClass().getDeclaredField("mService");
+            mService.setAccessible(true);
+            Object connService = mService.get(m_Cm);
+            Class<?> connServiceClass = Class.forName(connService.getClass().getName());
+            if(enabled) {
+                Method startTethering = connServiceClass.getMethod("startTethering", int.class, ResultReceiver.class, boolean.class);
+                startTethering.invoke(connService, TETHERING_WIFI, new ResultReceiver(mHandler) {
+                    @Override
+                    protected void onReceiveResult(int resultCode, Bundle resultData) {
+                        super.onReceiveResult(resultCode, resultData);
+                    }
+                }, true);
+            } else {
+                Method stopTethering = connServiceClass.getMethod("stopTethering", int.class);
+                stopTethering.invoke(connService, TETHERING_WIFI);
+            }
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public static void setCountryCode(String country, boolean persist)
+    {
+        Log.d(TAG, "setCountryCode: " + country + " " + persist);
+        try {
+            Method setCountryCode = m_wifiManager.getClass().getMethod("setCountryCode", String.class, boolean.class);
+            setCountryCode.invoke(m_wifiManager, country, persist);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static String getCountryCode()
+    {
+        try {
+            Method getCountryCode = m_wifiManager.getClass().getMethod("getCountryCode");
+            return (String)getCountryCode.invoke(m_wifiManager);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 }
 

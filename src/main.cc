@@ -29,6 +29,7 @@
 #include "QGCApplication.h"
 #include "AppMessages.h"
 
+
 #ifndef __mobile__
     #include "QGCSerialPortInfo.h"
     #include "RunGuard.h"
@@ -83,6 +84,7 @@ int WindowsCrtReportHook(int reportType, char* message, int* returnValue)
 #if defined(__android__)
 #include <jni.h>
 #include "JoystickAndroid.h"
+#include "Settings/WifiSettings.h"
 #if defined(QGC_ENABLE_PAIRING)
 #include "PairingManager.h"
 #endif
@@ -187,7 +189,7 @@ jint JNI_OnLoad(JavaVM* vm, void* reserved)
  #if !defined(NO_SERIAL_LINK)
     QSerialPort::setNativeMethods();
  #endif
-
+    WifiSettings::setNativeMethods();
     JoystickAndroid::setNativeMethods();
 
 #if defined(QGC_ENABLE_PAIRING)
@@ -213,6 +215,24 @@ bool checkAndroidWritePermission() {
    return true;
 }
 #endif
+
+//-----------------------------------------------------------------------------
+#ifdef __android__
+#include <QtAndroid>
+bool checkAndroidWriteSettingsPermission() {
+    QtAndroid::PermissionResult r = QtAndroid::checkPermission("android.permission.WRITE_SETTINGS");
+    if(r == QtAndroid::PermissionResult::Denied) {
+        QtAndroid::requestPermissionsSync( QStringList() << "android.permission.WRITE_SETTINGS" );
+        r = QtAndroid::checkPermission("android.permission.WRITE_SETTINGS");
+        if(r == QtAndroid::PermissionResult::Denied) {
+             return false;
+        }
+   }
+   return true;
+}
+#endif
+
+
 
 //-----------------------------------------------------------------------------
 /**
@@ -388,6 +408,7 @@ int main(int argc, char *argv[])
 
 #ifdef __android__
         checkAndroidWritePermission();
+        checkAndroidWriteSettingsPermission();
 #endif
         if (!app->_initForNormalAppBoot()) {
             return -1;

@@ -433,6 +433,9 @@ contains (DEFINES, QGC_ENABLE_PAIRING) {
 #
 
 HEADERS += \
+    src/AndroidInterface.h \
+    src/Settings/RfSettings.h \
+    src/Settings/WifiSettings.h \
     src/api/QGCCorePlugin.h \
     src/api/QGCOptions.h \
     src/api/QGCSettings.h \
@@ -446,6 +449,9 @@ contains (DEFINES, QGC_ENABLE_PAIRING) {
 }
 
 SOURCES += \
+    src/AndroidInterface.cc \
+    src/Settings/RfSettings.cc \
+    src/Settings/WifiSettings.cc \
     src/api/QGCCorePlugin.cc \
     src/api/QGCOptions.cc \
     src/api/QGCSettings.cc \

@@ -259,6 +259,7 @@ VideoManager::isGStreamer()
         videoSource == VideoSettings::videoSourceRTSP ||
         videoSource == VideoSettings::videoSourceTCP ||
         videoSource == VideoSettings::videoSourceMPEGTS ||
+        videoSource == VideoSettings::videoSourceAuto ||
         autoStreamConfigured();
 #else
     return false;
@@ -401,6 +402,8 @@ VideoManager::_updateSettings()
         _videoReceiver->setUri(_videoSettings->rtspUrl()->rawValue().toString());
     else if (source == VideoSettings::videoSourceTCP)
         _videoReceiver->setUri(QStringLiteral("tcp://%1").arg(_videoSettings->tcpUrl()->rawValue().toString()));
+     else if(source == VideoSettings::videoSourceAuto)
+        _videoReceiver->setUri("rtsp://192.168.144.10:8554/H264Video");
 }
 
 //-----------------------------------------------------------------------------

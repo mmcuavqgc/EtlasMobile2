@@ -301,6 +301,7 @@
         <file alias="Vehicle/ClockFact_ZH.json">src/Vehicle/ClockFact_ZH.json</file>
         <file alias="Vehicle/BatteryFact_ZH.json">src/Vehicle/BatteryFact_ZH.json</file>
         <file alias="Vehicle/WindFact_ZH.json">src/Vehicle/WindFact_ZH.json</file>
+        <file alias="RF.SettingsGroup.json">src/Settings/RF.SettingsGroup.json</file>
     </qresource>
     <qresource prefix="/MockLink">
         <file alias="APMArduSubMockLink.params">src/comm/APMArduSubMockLink.params</file>
