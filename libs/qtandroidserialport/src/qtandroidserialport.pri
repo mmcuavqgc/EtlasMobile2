@@ -6,7 +6,8 @@ android {
 
     PUBLIC_HEADERS += \
         $$PWD/qserialport.h \
-        $$PWD/qserialportinfo.h
+        $$PWD/qserialportinfo.h \
+        $$PWD/opendevice.h
 
     PRIVATE_HEADERS += \
         $$PWD/qserialport_p.h \
@@ -17,7 +18,8 @@ android {
         $$PWD/qserialport.cpp \
         $$PWD/qserialportinfo.cpp \
         $$PWD/qserialport_android.cpp \
-        $$PWD/qserialportinfo_android.cpp
+        $$PWD/qserialportinfo_android.cpp \
+        $$PWD/opendevice.cpp
 
     CONFIG += mobility
 

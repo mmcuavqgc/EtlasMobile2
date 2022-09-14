@@ -47,6 +47,7 @@
 #include <QtAndroidExtras/QAndroidJniObject>
 
 #include "qserialport_android_p.h"
+#include "opendevice.h"
 
 QGC_LOGGING_CATEGORY(AndroidSerialPortLog, "AndroidSerialPortLog")
 
@@ -134,6 +135,7 @@ QSerialPortPrivate::QSerialPortPrivate(QSerialPort *q)
     , jniParity(0)
     , internalWriteTimeoutMsec(0)
     , isReadStopped(true)
+    , _port_ptr(new AndroidSerialPort(this))
 {
 }
 
@@ -181,16 +183,22 @@ bool QSerialPortPrivate::open(QIODevice::OpenMode mode)
     rwMode = mode;
     qCDebug(AndroidSerialPortLog) << "Opening" << systemLocation.toLatin1().data();
 
-    QAndroidJniObject jnameL = QAndroidJniObject::fromString(systemLocation);
-    cleanJavaException();
-    deviceId = QAndroidJniObject::callStaticMethod<jint>(
-        kJniClassName,
-        "open",
-        "(Landroid/content/Context;Ljava/lang/String;J)I",
-        QtAndroid::androidActivity().object(),
-        jnameL.object<jstring>(),
-        reinterpret_cast<jlong>(this));
-    cleanJavaException();
+    if(isSpecialPortName()) {
+        deviceId = _port_ptr->openPort(systemLocation.toLatin1().data(), mode);
+
+        _port_ptr->startReadThread();
+    } else {
+        QAndroidJniObject jnameL = QAndroidJniObject::fromString(systemLocation);
+        cleanJavaException();
+        deviceId = QAndroidJniObject::callStaticMethod<jint>(
+            kJniClassName,
+            "open",
+            "(Landroid/content/Context;Ljava/lang/String;J)I",
+            QtAndroid::androidActivity().object(),
+            jnameL.object<jstring>(),
+            reinterpret_cast<jlong>(this));
+        cleanJavaException();
+    }
 
     isReadStopped = false;
 
@@ -213,13 +221,20 @@ void QSerialPortPrivate::close()
         return;
 
     qCDebug(AndroidSerialPortLog) << "Closing" << systemLocation.toLatin1().data();
-    cleanJavaException();
-    jboolean resultL = QAndroidJniObject::callStaticMethod<jboolean>(
-        kJniClassName,
-        "close",
-        "(I)Z",
-        deviceId);
-    cleanJavaException();
+    jboolean resultL = false;
+    if(isSpecialPortName()) {
+        _port_ptr->stopReadThread();
+        QThread::msleep(1000);
+        resultL = !_port_ptr->closePort();
+    } else {
+        cleanJavaException();
+        resultL = QAndroidJniObject::callStaticMethod<jboolean>(
+            kJniClassName,
+            "close",
+            "(I)Z",
+            deviceId);
+        cleanJavaException();
+    }
 
     descriptor = -1;
     isCustomBaudRateSupported = false;
@@ -237,18 +252,22 @@ bool QSerialPortPrivate::setParameters(int baudRateA, int dataBitsA, int stopBit
         q_ptr->setError(QSerialPort::NotOpenError);
         return false;
     }
-
-    cleanJavaException();
-    jboolean resultL = QAndroidJniObject::callStaticMethod<jboolean>(
-        kJniClassName,
-        "setParameters",
-        "(IIIII)Z",
-        deviceId,
-        baudRateA,
-        dataBitsA,
-        stopBitsA,
-        parityA);
-    cleanJavaException();
+    jboolean resultL = false;
+    if(isSpecialPortName()) {
+        resultL = _port_ptr->setParameters(deviceId, baudRateA, dataBitsA, stopBitsA, parityA);
+    } else {
+        cleanJavaException();
+        resultL = QAndroidJniObject::callStaticMethod<jboolean>(
+            kJniClassName,
+            "setParameters",
+            "(IIIII)Z",
+            deviceId,
+            baudRateA,
+            dataBitsA,
+            stopBitsA,
+            parityA);
+        cleanJavaException();
+    }
 
     if(resultL)
     {
@@ -268,13 +287,17 @@ void QSerialPortPrivate::stopReadThread()
 {
     if (isReadStopped)
         return;
-    cleanJavaException();
-    QAndroidJniObject::callStaticMethod<void>(
-        kJniClassName,
-        "stopIoManager",
-        "(I)V",
-        deviceId);
-    cleanJavaException();
+    if(isSpecialPortName()) {
+//        _port_ptr->stopReadThread();
+    } else {
+        cleanJavaException();
+        QAndroidJniObject::callStaticMethod<void>(
+            kJniClassName,
+            "stopIoManager",
+            "(I)V",
+            deviceId);
+        cleanJavaException();
+    }
     isReadStopped = true;
 }
 
@@ -284,13 +307,17 @@ void QSerialPortPrivate::startReadThread()
 {
     if (!isReadStopped)
         return;
-    cleanJavaException();
-    QAndroidJniObject::callStaticMethod<void>(
-        kJniClassName,
-        "startIoManager",
-        "(I)V",
-        deviceId);
-    cleanJavaException();
+    if(isSpecialPortName()) {
+//        _port_ptr->startReadThread();
+    } else {
+        cleanJavaException();
+        QAndroidJniObject::callStaticMethod<void>(
+            kJniClassName,
+            "startIoManager",
+            "(I)V",
+            deviceId);
+        cleanJavaException();
+    }
     isReadStopped = false;
 }
 
@@ -306,14 +333,19 @@ bool QSerialPortPrivate::setDataTerminalReady(bool set)
         q_ptr->setError(QSerialPort::NotOpenError);
         return false;
     }
-    cleanJavaException();
-    bool res = QAndroidJniObject::callStaticMethod<jboolean>(
-        kJniClassName,
-        "setDataTerminalReady",
-        "(IZ)Z",
-        deviceId,
-        set);
-    cleanJavaException();
+    bool res = true;
+    if(isSpecialPortName()) {
+
+    } else {
+        cleanJavaException();
+        res = QAndroidJniObject::callStaticMethod<jboolean>(
+            kJniClassName,
+            "setDataTerminalReady",
+            "(IZ)Z",
+            deviceId,
+            set);
+        cleanJavaException();
+    }
     return res;
 }
 
@@ -324,14 +356,19 @@ bool QSerialPortPrivate::setRequestToSend(bool set)
         q_ptr->setError(QSerialPort::NotOpenError);
         return false;
     }
-    cleanJavaException();
-    bool res = QAndroidJniObject::callStaticMethod<jboolean>(
-        kJniClassName,
-        "setRequestToSend",
-        "(IZ)Z",
-        deviceId,
-        set);
-    cleanJavaException();
+    bool res = true;
+    if(isSpecialPortName()) {
+
+    } else {
+        cleanJavaException();
+        res = QAndroidJniObject::callStaticMethod<jboolean>(
+            kJniClassName,
+            "setRequestToSend",
+            "(IZ)Z",
+            deviceId,
+            set);
+        cleanJavaException();
+    }
     return res;
 }
 
@@ -362,28 +399,33 @@ bool QSerialPortPrivate::clear(QSerialPort::Directions directions)
             outputL = true;
     }
 
-    cleanJavaException();
-    bool res = QAndroidJniObject::callStaticMethod<jboolean>(
-        kJniClassName,
-        "purgeBuffers",
-        "(IZZ)Z",
-        deviceId,
-        inputL,
-        outputL);
+    bool res = true;
+    if(isSpecialPortName()) {
 
-    cleanJavaException();
+    } else {
+        cleanJavaException();
+        res = QAndroidJniObject::callStaticMethod<jboolean>(
+            kJniClassName,
+            "purgeBuffers",
+            "(IZZ)Z",
+            deviceId,
+            inputL,
+            outputL);
+
+        cleanJavaException();
+    }
     return res;
 }
 
 bool QSerialPortPrivate::sendBreak(int duration)
 {
-    Q_UNUSED(duration);
+    Q_UNUSED(duration)
     return true;
 }
 
 bool QSerialPortPrivate::setBreakEnabled(bool set)
 {
-    Q_UNUSED(set);
+    Q_UNUSED(set)
     return true;
 }
 
@@ -426,7 +468,7 @@ bool QSerialPortPrivate::setBaudRate()
 
 bool QSerialPortPrivate::setBaudRate(qint32 baudRate, QSerialPort::Directions directions)
 {
-    Q_UNUSED(directions);
+    Q_UNUSED(directions)
     return setParameters(baudRate, jniDataBits, jniStopBits, jniParity);
 }
 
@@ -508,7 +550,7 @@ bool QSerialPortPrivate::setStopBits(QSerialPort::StopBits stopBits)
 
 bool QSerialPortPrivate::setFlowControl(QSerialPort::FlowControl flowControl)
 {
-    Q_UNUSED(flowControl);
+    Q_UNUSED(flowControl)
     return true;
 }
 
@@ -577,6 +619,14 @@ bool QSerialPortPrivate::writeDataOneShot()
     return (pendingBytesWritten < 0)? false: true;
 }
 
+bool QSerialPortPrivate::isSpecialPortName()
+{
+    if(systemLocation.contains("ttys", Qt::CaseInsensitive)) {
+        return true;
+    }
+    return false;
+}
+
 QSerialPort::SerialPortError QSerialPortPrivate::decodeSystemError() const
 {
     QSerialPort::SerialPortError error;
@@ -615,27 +665,33 @@ qint64 QSerialPortPrivate::writeToPort(const char *data, qint64 maxSize)
         return 0;
     }
 
-    QAndroidJniEnvironment jniEnv;
-    jbyteArray jarrayL = jniEnv->NewByteArray(static_cast<jsize>(maxSize));
-    jniEnv->SetByteArrayRegion(jarrayL, 0, static_cast<jsize>(maxSize), (jbyte*)data);
-    if (jniEnv->ExceptionCheck())
-        jniEnv->ExceptionClear();
-    int resultL = QAndroidJniObject::callStaticMethod<jint>(
-        kJniClassName,
-        "write",
-        "(I[BI)I",
-        deviceId,
-        jarrayL,
-        internalWriteTimeoutMsec);
+    int resultL = 0;
+    if(isSpecialPortName()) {
+        _port_ptr->writeData(data, maxSize);
+    } else {
+        QAndroidJniEnvironment jniEnv;
+        jbyteArray jarrayL = jniEnv->NewByteArray(static_cast<jsize>(maxSize));
+        jniEnv->SetByteArrayRegion(jarrayL, 0, static_cast<jsize>(maxSize), (jbyte*)data);
+        if (jniEnv->ExceptionCheck())
+            jniEnv->ExceptionClear();
+        resultL = QAndroidJniObject::callStaticMethod<jint>(
+            kJniClassName,
+            "write",
+            "(I[BI)I",
+            deviceId,
+            jarrayL,
+            internalWriteTimeoutMsec);
 
-    if (jniEnv->ExceptionCheck())
-    {
-        jniEnv->ExceptionClear();
-        q_ptr->setErrorString(QStringLiteral("Writing to the device threw an exception"));
+        if (jniEnv->ExceptionCheck())
+        {
+            jniEnv->ExceptionClear();
+            q_ptr->setErrorString(QStringLiteral("Writing to the device threw an exception"));
+            jniEnv->DeleteLocalRef(jarrayL);
+            return 0;
+        }
         jniEnv->DeleteLocalRef(jarrayL);
-        return 0;
     }
-    jniEnv->DeleteLocalRef(jarrayL);
+
     return resultL;
 }
 

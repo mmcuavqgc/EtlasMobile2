@@ -712,6 +712,10 @@ void LinkManager::_updateSerialPorts()
         _commPortDisplayList += SerialConfiguration::cleanPortDisplayname(port);
     }
 #endif
+#ifdef __mobile__
+    _commPortList += "/dev/ttysWK2";
+    _commPortDisplayList += SerialConfiguration::cleanPortDisplayname("ttysWK2");
+#endif
 }
 
 QStringList LinkManager::serialPortStrings(void)

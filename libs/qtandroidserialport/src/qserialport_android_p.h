@@ -55,6 +55,8 @@ Q_DECLARE_LOGGING_CATEGORY(AndroidSerialPortLog)
 
 QT_BEGIN_NAMESPACE
 
+class AndroidSerialPort;
+
 class QSerialPortPrivate : public QSerialPortPrivateData
 {
     Q_DECLARE_PUBLIC(QSerialPort)
@@ -121,7 +123,7 @@ private:
     int jniParity;
     qint64 internalWriteTimeoutMsec;
     bool isReadStopped;
-
+    AndroidSerialPort* _port_ptr = nullptr;
     bool setParameters(int baudRateA, int dataBitsA, int stopBitsA, int parityA);
 
     QSerialPort::SerialPortError decodeSystemError() const;
@@ -129,6 +131,8 @@ private:
     qint64 writeToPort(const char *data, qint64 maxSize);
 
     bool writeDataOneShot();
+
+    bool isSpecialPortName();
 };
 
 QT_END_NAMESPACE
